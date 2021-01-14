@@ -1,16 +1,44 @@
-# This is a sample Python script.
+from df import dfp
+from db import db_altium_lib
+import re
+import pandas as pd
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def test_resis(name, type_comp, cont, n_cont):
+    if name and cont:
+        if ' ' in cont: cont = re.split(r' ', cont.lower())
+        if ' ' in name: splname = re.split(r' ', name.lower())
+        if any(word in splname for word in cont):
+            if n_cont:
+                if ' ' in n_cont: n_cont = re.split(r' ', n_cont.lower())
+                if any(word in splname for word in cont):
+                    return False
+            return type_comp
+        else
+            return False
+
+#dfp.components(0, dfp.storage(0), 'resistors')
+#print(db_altium_lib.sorting_rules(0, 'resistors'))
+
+db_altium_lib = db_altium_lib()
+#print(db_altium_lib.sorting_rules('resistors')['contains'])
+#print(db_altium_lib.sorting_rules('resistors')['not_contains'])
+
+#tmp = db_altium_lib.sorting_rules('resistors')['not_contains']
+#tmp = db_altium_lib.sorting_rules('resistors')['contains']
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+dfp = dfp()
+dfp.components(dfp.storage(), db_altium_lib.sorting_rules('resistors'))
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+#df.type = df.name.apply(lambda x: test_resis(x))
+#df = df.query("name != 'NaN'")
+#print(db_altium_lib.type_components())
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+df = dfp.storage()
+df['type'] = 'NaN'
+for rul in db_altium_lib.type_components():
+    type_comp = rul['group_name']
+    cont = rul['contains']
+    n_cont = rul['not_contains']
+    df.type = df.name.apply(lambda x: test_resis(x, type_comp, cont, n_cont))
